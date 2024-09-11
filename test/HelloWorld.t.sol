@@ -15,17 +15,5 @@ contract HelloWorldTest is Test {
         base.setup();
     }
 
-    function testCorrectAnswer() public {
-        HelloWorld h = base.helloWorld();
-        h.answer("HelloWorld");
-        base.solve();
-        assertTrue(base.isSolved());
-    }
-
-    function testIncorrectAnswer() public {
-        HelloWorld h = base.helloWorld();
-        h.answer("GmWorld");
-        vm.expectRevert();
-        base.solve();
-    }
+    function testExploit() public {}
 }

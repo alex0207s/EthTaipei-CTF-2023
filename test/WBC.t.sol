@@ -4,12 +4,10 @@ pragma solidity ^0.8.0;
 import {console2} from "forge-std/console2.sol";
 import {Test} from "forge-std/Test.sol";
 import {WBC, WBCBase} from "src/WBC/WBC.sol";
-import {Ans} from "src/WBC/Ans.sol";
 
 contract WBCTest is Test {
     WBCBase public base;
     WBC public wbc;
-    Ans public ans;
 
     uint256 count;
 
@@ -22,30 +20,5 @@ contract WBCTest is Test {
         wbc = base.wbc();
     }
 
-    function testExploit() external {
-        uint256 salt = 1;
-        ans = new Ans{salt: bytes32(salt)}(address(wbc));
-        ans.win();
-        base.solve();
-        assertTrue(base.isSolved());
-    }
-
-    function testCannotHomeRunEasily() external {
-        vm.expectRevert("try again");
-        wbc.homerun();
-        vm.expectRevert();
-        base.solve();
-    }
-
-    function testSalt() external {
-        uint256 salt;
-
-        for (uint256 i = 0; i < 1000; ++i) {
-            try new Ans{salt: bytes32(i)}(address(wbc)) returns (Ans) {
-                salt = i;
-                break;
-            } catch {}
-        }
-        console2.log(salt);
-    }
+    function testExploit() external {}
 }

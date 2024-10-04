@@ -35,46 +35,15 @@ contract ArcadeTest is Test {
         vm.label(address(arcade), "Arcade");
     }
 
-    function testSetUp() public {
-        assertEq(arcade.currentPlayer(), you);
-        assertEq(arcade.getCurrentPlayerPoints(), 0);
-
-        assertEq(arcade.scoreboard(player1), 80);
-        assertEq(arcade.scoreboard(player2), 120);
-        assertEq(arcade.scoreboard(player3), 180);
-        assertEq(arcade.scoreboard(player4), 190);
-
-        assertEq(arcade.numPlayers(), 5);
-        assertEq(arcade.players(0), you);
-        assertEq(arcade.players(1), player1);
-        assertEq(arcade.players(2), player2);
-        assertEq(arcade.players(3), player3);
-        assertEq(arcade.players(4), player4);
-    }
-
-    function testEarn() public {
-        vm.warp(10 minutes);
-        vm.prank(you);
-        arcade.earn();
-        assertEq(arcade.scoreboard(you), 10);
-        assertEq(arcade.lastEarnTimestamp(), block.timestamp);
-    }
-
-    function testRedeem() public {
+    function testArcadeExploit() public {
         vm.warp(10 minutes);
         vm.startPrank(you);
         arcade.earn();
         arcade.redeem();
+        arcade.changePlayer(player4);
         vm.stopPrank();
-        assertEq(arcade.scoreboard(you), 0);
-        assertEq(arcade.balanceOf(you), 10);
-    }
 
-    function testChangePlayer() public {
-        vm.prank(you);
-        arcade.changePlayer(player1);
-        assertEq(arcade.currentPlayer(), player1);
+        arcadeBase.solve();
+        assertTrue(arcadeBase.isSolved());
     }
-
-    function testExploit() public {}
 }

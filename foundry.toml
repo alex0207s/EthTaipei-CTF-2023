@@ -4,7 +4,7 @@ out = 'out'
 libs = ['lib']
 # solc_version = '0.8.18'
 auto_detect_solc = true
-
+always_use_create_2_factory = true
 [fmt]
 ignore = ['lib', 'src/lib']
 

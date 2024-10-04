@@ -15,5 +15,11 @@ contract HelloWorldTest is Test {
         base.setup();
     }
 
-    function testExploit() public {}
+    function testExploit() public {
+        HelloWorld helloWorld = base.helloWorld();
+        helloWorld.answer("HelloWorld");
+
+        base.solve();
+        assertTrue(base.isSolved());
+    }
 }

